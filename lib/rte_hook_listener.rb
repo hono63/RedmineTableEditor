@@ -4,6 +4,9 @@ class RteHookListener < Redmine::Hook::ViewListener
         return <<-EOS
 <link href="https://unpkg.com/tabulator-tables@4.9.3/dist/css/tabulator.min.css" rel="stylesheet">
 <script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.9.3/dist/js/tabulator.min.js"></script>
+<script type="text/javascript">
+alert("Hello");
+</script>
 EOS
     end
 end
