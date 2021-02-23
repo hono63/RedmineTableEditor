@@ -5,3 +5,5 @@ Description goes here
 = 注意
 
 redmine_table_editor という名前に変更してplugins下に配置する
+
+Redmineのバージョンは4.1.1
