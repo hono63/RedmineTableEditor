@@ -1,3 +1,5 @@
+require_dependency 'rte_hook_listener'
+
 Redmine::Plugin.register :redmine_table_editor do
   name 'Redmine Table Editor plugin'
   author 'hono63'
