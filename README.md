@@ -1,3 +1,0 @@
-# RedmineTableEditor
-
-テーブルエディタが作りたかった
