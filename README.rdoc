@@ -1,6 +1,6 @@
 = redmine_table_editor
 
-Description goes here
+Redmineのチケットをテーブル編集するプラグイン(未)
 
 = 注意
 
