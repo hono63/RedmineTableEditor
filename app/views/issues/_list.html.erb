@@ -60,19 +60,21 @@
 <script type="text/javascript">
   // トラッカー
   <% @trackers = Tracker.all %>
-  var trackers_json = [
+  var trackers_json = {
     <% @trackers.each do |tracker| %>
-       {"<%= tracker.id %>": "<%= tracker.name %>"},
+      "<%= tracker.id %>": "<%= tracker.name %>",
     <% end %>
-  ];
+  };
   // タイトル
   var cols = [
     <% query.inline_columns.each do |column| %>
   <%= case column.name 
 when :id
-  ("{title:'" + column.caption.to_s + "',field:'" + column.name.to_s + "',formatter:'link', formatterParams:{labelField:'id', urlPrefix:'/issues/'}},").html_safe
+  ("{title:'" + column.caption.to_s + "',field:'" + column.name.to_s + "',formatter:'link', formatterParams:{labelField:'id', urlPrefix:'/issues/'}}").html_safe
+when :tracker
+  ("{title:'" + column.caption.to_s + "',field:'" + column.name.to_s + "',editor:'select', editorParams:{values:trackers_json}, formatter:'lookup', formatterParams:trackers_json}").html_safe
 when :assigned_to
-  ("{title:'" + column.caption.to_s + "',field:'" + column.name.to_s + "',formatter:'html'},").html_safe
+  ("{title:'" + column.caption.to_s + "',field:'" + column.name.to_s + "',formatter:'html'}").html_safe
 else
   {:title => column.caption.to_s, :field => column.name.to_s, :editor => 'input'}.to_json.html_safe
 end %>,
