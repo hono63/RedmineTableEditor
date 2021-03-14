@@ -53,10 +53,20 @@
   <% end -%>
   </tbody>
 </table>
+<div id="issue-tabulator"></div>
 </div>
 <link href="https://unpkg.com/tabulator-tables@4.9.3/dist/css/tabulator.min.css" rel="stylesheet">
 <script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.9.3/dist/js/tabulator.min.js"></script>
 <script type="text/javascript">
-alert("Hello");
+  var dat = [{id:1, val:2}, {id:2, val:3}];
+  var issue_tab = new Tabulator("#issue-tabulator", {
+        height: 400,
+        data: dat,
+        layout: "fitColumns",
+        columns: [
+          {title: "id", field:"id"},
+          {title: "val", field:"val"},
+        ],
+  });
 </script>
 <% end -%>
