@@ -58,6 +58,13 @@
 <link href="https://unpkg.com/tabulator-tables@4.9.3/dist/css/tabulator.min.css" rel="stylesheet">
 <script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.9.3/dist/js/tabulator.min.js"></script>
 <script type="text/javascript">
+  // トラッカー
+  <% @trackers = Tracker.all %>
+  var trackers_json = [
+    <% @trackers.each do |tracker| %>
+       {"<%= tracker.id %>": "<%= tracker.name %>"},
+    <% end %>
+  ];
   // タイトル
   var cols = [
     <% query.inline_columns.each do |column| %>
@@ -67,8 +74,8 @@ when :id
 when :assigned_to
   ("{title:'" + column.caption.to_s + "',field:'" + column.name.to_s + "',formatter:'html'},").html_safe
 else
-  ("{title:'" + column.caption.to_s + "',field:'" + column.name.to_s + "',editor:'input'},").html_safe
-end %>
+  {:title => column.caption.to_s, :field => column.name.to_s, :editor => 'input'}.to_json.html_safe
+end %>,
     <% end %>
   ];
   // チケットデータ
