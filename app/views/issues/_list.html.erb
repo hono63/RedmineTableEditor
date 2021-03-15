@@ -58,6 +58,13 @@
 <link href="https://unpkg.com/tabulator-tables@4.9.3/dist/css/tabulator.min.css" rel="stylesheet">
 <script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.9.3/dist/js/tabulator.min.js"></script>
 <script type="text/javascript">
+  // プロジェクト
+  <% @projects = Project.all %>
+  var projects_json = {
+    <% @projects.each do |project| %>
+      "<%= project.id %>": "<%= project.name %>",
+    <% end %>
+  };
   // トラッカー
   <% @trackers = Tracker.all %>
   var trackers_json = {
@@ -79,24 +86,53 @@
       "<%= prio.id %>": "<%= prio.name %>",
     <% end %>
   };
-  // タイトル
+  // ユーザー
+  <% @users = User.all %>
+  var users_json = {
+    <% @users.each do |user| %>
+      "<%= user.id %>": "<%= user.name %>",
+    <% end %>
+  };
+  // カテゴリ
+  <% @categories = IssueCategory.all %>
+  var categories_json = {
+    <% @categories.each do |cate| %>
+      "<%= cate.id %>": "<%= cate.name %>",
+    <% end %>
+  };
+  // バージョン
+  <% @fixed_versions = Version.all %>
+  var fixed_versions_json = {
+    <% @fixed_versions.each do |fixed_version| %>
+      "<%= fixed_version.id %>": "<%= fixed_version.name %>",
+    <% end %>
+  };
+  // タイトルデータ
   var cols = [
     <% query.inline_columns.each do |column| %>
   <%= case column.name 
 when :id
   ("{title:'" + column.caption.to_s + "',field:'" + column.name.to_s + "',formatter:'link', formatterParams:{labelField:'id', urlPrefix:'/issues/'}}").html_safe
-when :tracker
+when :project then
+  ("{title:'" + column.caption.to_s + "',field:'" + column.name.to_s + "',editor:'select', editorParams:{values:projects_json}, formatter:'lookup', formatterParams:projects_json}").html_safe
+when :tracker then
   ("{title:'" + column.caption.to_s + "',field:'" + column.name.to_s + "',editor:'select', editorParams:{values:trackers_json}, formatter:'lookup', formatterParams:trackers_json}").html_safe
-when :status
+when :status then
   ("{title:'" + column.caption.to_s + "',field:'" + column.name.to_s + "',editor:'select', editorParams:{values:statuses_json}, formatter:'lookup', formatterParams:statuses_json}").html_safe
-when :priority
+when :priority then
   ("{title:'" + column.caption.to_s + "',field:'" + column.name.to_s + "',editor:'select', editorParams:{values:prios_json}, formatter:'lookup', formatterParams:prios_json}").html_safe
-when :assigned_to
+when :category then
+  ("{title:'" + column.caption.to_s + "',field:'" + column.name.to_s + "',editor:'select', editorParams:{values:categories_json}, formatter:'lookup', formatterParams:categories_json}").html_safe
+when :fixed_version then
+  ("{title:'" + column.caption.to_s + "',field:'" + column.name.to_s + "',editor:'select', editorParams:{values:fixed_versions_json}, formatter:'lookup', formatterParams:fixed_versions_json}").html_safe
+when :assigned_to then
+  ("{title:'" + column.caption.to_s + "',field:'" + column.name.to_s + "',editor:'select', editorParams:{values:users_json}, formatter:'lookup', formatterParams:users_json}").html_safe
+when :author, :last_updated_by, :attachments, :parent then
   ("{title:'" + column.caption.to_s + "',field:'" + column.name.to_s + "',formatter:'html'}").html_safe
-when :updated_on
-  ("{title:'" + column.caption.to_s + "',field:'" + column.name.to_s + "'}").html_safe
-else
+when :subject then
   {:title => column.caption.to_s, :field => column.name.to_s, :editor => 'input'}.to_json.html_safe
+else
+  ("{title:'" + column.caption.to_s + "',field:'" + column.name.to_s.gsub(".", "_") + "'}").html_safe
 end %>,
     <% end %>
   ];
@@ -105,7 +141,21 @@ end %>,
     <% grouped_issue_list(issues, query) do |issue, level, group_name, group_count, group_totals| -%>
         {
       <% query.inline_columns.each do |column| -%>
-          <%= column.name.to_s %>: '<%= format_object(column.value_object(issue)) %>',
+          <%= column.name.to_s.gsub('.', '_') %>: '<%= case column.name 
+            when :project, :tracker, :status, :priority then
+              column.value_object(issue).id
+            when :category then
+              issue.category_id
+            when :fixed_version then
+              issue.fixed_version_id
+            when :assigned_to then
+              issue.assigned_to_id
+            when :attachments then
+              value = column.value_object(issue)
+              value.to_a.map {|a| format_object(a)}.join(" ").html_safe
+            else
+              format_object(column.value_object(issue)).html_safe 
+            end %>',
       <% end -%>
         },
     <% end -%>
